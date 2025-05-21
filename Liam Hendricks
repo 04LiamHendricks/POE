@@ -1,0 +1,102 @@
+using System;
+using System.Collections.Generic;
+
+namespace CybersecurityChatbot
+{
+    class Program
+    {
+        static Dictionary<string, List<string>> keywordResponses = new Dictionary<string, List<string>>()
+        {
+            {"password", new List<string> {
+                "Use a strong and unique password for each account.",
+                "Avoid using easily guessable information like your name or birthdate in passwords.",
+                "Consider using a password manager to store your passwords securely."
+            }},
+            {"scam", new List<string> {
+                "Always verify email addresses before clicking links.",
+                "Scammers often create a sense of urgency to trick you into giving up information.",
+                "Avoid sharing personal information over email or phone unless you are sure who you're talking to."
+            }},
+            {"privacy", new List<string> {
+                "Review your social media privacy settings regularly.",
+                "Be cautious of the information you share online.",
+                "Enable two-factor authentication for better privacy protection."
+            }}
+        };
+
+        static Dictionary<string, string> sentimentResponses = new Dictionary<string, string>()
+        {
+            {"worried", "It's okay to feel worried. Cybersecurity can be overwhelming, but I'm here to help."},
+            {"curious", "Great! Curiosity is the first step to learning more about staying safe online."},
+            {"frustrated", "I'm sorry you're feeling that way. Let's take it step by step and address your concerns."}
+        };
+
+        static string userName = "";
+        static string userInterest = "";
+
+        static void Main(string[] args)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("╔══════════════════════════════════════════╗");
+            Console.WriteLine("║  Welcome to the Cybersecurity Chatbot!  ║");
+            Console.WriteLine("╚══════════════════════════════════════════╝");
+            Console.ResetColor();
+
+            Console.Write("Hello! What's your name? ");
+            userName = Console.ReadLine();
+            Console.WriteLine($"
+Nice to meet you, {userName}!");
+
+            while (true)
+            {
+                Console.Write("\nAsk me anything about cybersecurity or type 'exit' to quit:\n> ");
+                string input = Console.ReadLine().ToLower().Trim();
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    Console.WriteLine("Please enter a valid question.");
+                    continue;
+                }
+
+                if (input == "exit")
+                {
+                    Console.WriteLine("Goodbye! Stay safe online.");
+                    break;
+                }
+
+                if (sentimentResponses.ContainsKey(input))
+                {
+                    Console.WriteLine(sentimentResponses[input]);
+                    continue;
+                }
+
+                foreach (var keyword in keywordResponses.Keys)
+                {
+                    if (input.Contains(keyword))
+                    {
+                        var responses = keywordResponses[keyword];
+                        Random rand = new Random();
+                        int index = rand.Next(responses.Count);
+                        Console.WriteLine(responses[index]);
+
+                        if (userInterest == "" && (keyword == "privacy" || keyword == "password" || keyword == "scam"))
+                        {
+                            userInterest = keyword;
+                            Console.WriteLine($"Got it! I'll remember that you're interested in {userInterest}.");
+                        }
+                        else if (userInterest != "")
+                        {
+                            Console.WriteLine($"As someone interested in {userInterest}, here's more: {responses[index]}");
+                        }
+
+                        goto ContinueChat;
+                    }
+                }
+
+                Console.WriteLine("I'm not sure I understand. Could you rephrase?");
+
+            ContinueChat: ;
+            }
+        }
+    }
+}
